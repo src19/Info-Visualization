@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Charts</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="login.html">Login</a>
+  </div>
+
+  <h1>Age Distribution Bar Chart</h1>
+  <svg id="ageChart" width="600" height="400"></svg>
+
+  <h1>Weekly Hours Spent on Placement Preparation</h1>
+  <svg id="hoursChart" width="600" height="400"></svg>
+
+  <br><br><br>
+
+  <script>
+    d3.csv("data.csv").then(data => {
+      // Age Distribution Bar Chart
+      const ages = data.map(d => +d.Age);
+      const ageCounts = ages.reduce((acc, age) => {
+        acc[age] = (acc[age] || 0) + 1;
+        return acc;
+      }, {});
+
+      const ageData = Object.entries(ageCounts).map(([age, count]) => ({
+        Age: +age,
+        Count: count
+      }));
+
+      const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+      const width = 600 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      const svgAge = d3.select("#ageChart")
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+      const xAge = d3.scaleBand()
+        .domain(ageData.map(d => d.Age))
+        .range([0, width])
+        .padding(0.1);
+
+      const yAge = d3.scaleLinear()
+        .domain([0, d3.max(ageData, d => d.Count)])
+        .range([height, 0]);
+
+      svgAge.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xAge).tickFormat(d3.format("d")))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 25)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("Age");
+
+      svgAge.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(yAge))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -35)
+        .attr("x", -height / 2)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("Count");
+
+      svgAge.selectAll(".bar")
+        .data(ageData)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", d => xAge(d.Age))
+        .attr("y", d => yAge(d.Count))
+        .attr("width", xAge.bandwidth())
+        .attr("height", d => height - yAge(d.Count));
+
+      // Weekly Hours Spent on Placement Preparation Line Chart
+      const parsedData = data.map(d => ({
+        hours: +d["Hours"] || 0
+      }));
+
+      const svgHours = d3.select("#hoursChart")
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+      const xHours = d3.scalePoint()
+        .domain(parsedData.map((d, i) => i))
+        .range([0, width])
+        .padding(0.5);
+
+      const yHours = d3.scaleLinear()
+        .domain([0, d3.max(parsedData, d => d.hours) + 10])
+        .range([height, 0]);
+
+      svgHours.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(xHours).ticks(parsedData.length).tickFormat(""))
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 25)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("Students");
+
+      svgHours.append("g")
+        .attr("class", "axis axis--y")
+        .call(d3.axisLeft(yHours).ticks(10))
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -35)
+        .attr("x", -height / 2)
+        .attr("text-anchor", "middle")
+        .attr("fill", "white")
+        .text("Hours Spent");
+
+      const line = d3.line()
+        .x((d, i) => xHours(i))
+        .y(d => yHours(d.hours));
+
+      // line
+      svgHours.append("path")
+        .datum(parsedData)
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+      svgHours.selectAll(".dot")
+        .data(parsedData)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("cx", (d, i) => xHours(i))
+        .attr("cy", d => yHours(d.hours))
+        .attr("r", 5)
+        .attr("fill", "steelblue");
+    }).catch(error => {
+      console.error("Error loading the CSV file:", error);
+    });
+  </script>
+</body>
+
+</html>
