@@ -16,4 +16,4 @@ https://drive.google.com/file/d/1v8Y83_wC6N_6tDPJRaFmBGi7zsPOSYWf/view?usp=drive
 ![WhatsApp Image 2024-10-31 at 5 48 57 PM](https://github.com/user-attachments/assets/45641782-c6eb-4d6b-9801-f848dee35f83)
 
 ## Team Members
-![WhatsApp Image 2024-10-31 at 5 40 31 PM](https://github.com/user-attachments/assets/6c6504fa-3ba3-4fa7-bc44-68cb62b33f7c)
+![WhatsApp Image 2024-10-31 at 5 49 19 PM](https://github.com/user-attachments/assets/f87a746b-0480-4a0f-be96-af5376b69561)
